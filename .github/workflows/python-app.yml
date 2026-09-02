@@ -32,5 +32,7 @@ jobs:
           python -m py_compile src/storage.py
           
       - name: Run tests
+        env:
+          PYTHONPATH: .
         run: |
-          pytest -q
+          python -m pytest -q
