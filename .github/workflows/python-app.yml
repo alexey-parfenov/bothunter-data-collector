@@ -30,3 +30,7 @@ jobs:
           python -m py_compile src/models.py
           python -m py_compile src/health.py
           python -m py_compile src/storage.py
+          
+      - name: Run tests
+        run: |
+          pytest -q
