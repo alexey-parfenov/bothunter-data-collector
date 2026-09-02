@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from statistics import mean
 
-from models import MarketEvent
+from src.models import MarketEvent
 
 
 @dataclass(slots=True)
