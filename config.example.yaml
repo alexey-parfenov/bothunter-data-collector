@@ -1,0 +1,20 @@
+# Example configuration for BotHunter Data Collector.
+# This file contains no credentials or production settings.
+
+exchanges:
+  - exchange_a
+  - exchange_b
+  - exchange_c
+
+collector:
+  reconnect_delay_seconds: 5
+  health_check_interval_seconds: 10
+  max_event_latency_ms: 3000
+
+storage:
+  format: parquet
+  output_dir: data
+  save_health_stats: true
+
+logging:
+  level: INFO
