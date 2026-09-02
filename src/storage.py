@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from models import MarketEvent
+from src.models import MarketEvent
 
 
 class EventStorage:
