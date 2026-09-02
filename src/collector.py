@@ -130,6 +130,16 @@ class DataCollector:
                 return_exceptions=True,
             )
 
+        csv_path = self.storage.save_csv()
+        parquet_path = self.storage.save_parquet()
+
+        logger.info(
+            "Saved %d events to %s and %s",
+            len(self.storage),
+            csv_path,
+            parquet_path,
+        )
+
         logger.info(
             "Collector stopped. Health snapshot: %s",
             self.health.snapshot(),
