@@ -42,3 +42,8 @@ jobs:
           PYTHONPATH: .
         run: |
           python -m src.collector
+          
+      - name: Verify generated files
+        run: |
+          test -f data/events.csv
+          test -f data/events.parquet
