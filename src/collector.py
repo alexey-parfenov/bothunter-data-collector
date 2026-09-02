@@ -12,6 +12,7 @@ from datetime import datetime, timedelta, timezone
 
 from health import HealthMonitor
 from models import MarketEvent
+from storage import EventStorage
 
 
 logging.basicConfig(
@@ -32,6 +33,7 @@ class DataCollector:
             stale_after_ms=5_000.0,
             max_event_latency_ms=3_000.0,
         )
+    self.storage = EventStorage()
 
     async def connect(self, exchange: str) -> None:
         """Simulate connection to an external market-data source."""
@@ -71,6 +73,7 @@ class DataCollector:
     async def process_event(self, event: MarketEvent) -> None:
         """Validate an event and update health statistics."""
         self.health.observe(event)
+        self.storage.save(event)
 
         logger.info(
             "%s | %s | %s | price=%s | quantity=%s | latency=%.2f ms",
