@@ -4,7 +4,7 @@ Asynchronous Python application for collecting and processing real-time market d
 
 ## About the project
 
-BotHunter Data Collector is a personal Python project developed to practice building reliable asynchronous applications that work with external APIs and high-frequency data streams.
+BotHunter Data Collector is a personal Python project focused on building a reliable asynchronous data collection system for multiple external APIs and real-time data streams.
 
 The application collects public market data using REST APIs and WebSocket connections, processes incoming events and monitors the quality and stability of data collection.
 
