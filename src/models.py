@@ -42,6 +42,11 @@ class MarketEvent:
 
         if self.received_timestamp.tzinfo is None:
             raise ValueError("Received timestamp must be timezone-aware")
+            
+        if self.event_timestamp > self.received_timestamp:
+            raise ValueError(
+                "Event timestamp must not be later than received timestamp"
+            )
 
         now = datetime.now(timezone.utc)
 
