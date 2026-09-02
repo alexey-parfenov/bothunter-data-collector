@@ -33,19 +33,19 @@ The application is divided into several logical components:
 
 ```text
 External data sources
-        |
-        v
+        │
+        ▼
   Async collectors
-        |
-        v
+        │
+        ▼
  Event normalization
-        |
-        +------------> Health / latency monitoring
-        |
-        v
+        │
+        ├──────────────► Health / latency monitoring
+        │
+        ▼
  Event processing
-        |
-        v
+        │
+        ▼
  Persistent storage
 ```
 
@@ -53,27 +53,27 @@ External data sources
 
 ```text
 bothunter-data-collector/
-|
-+-- src/
-|   +-- __init__.py
-|   +-- collector.py
-|   +-- models.py
-|   +-- health.py
-|   +-- storage.py
-|
-+-- tests/
-|   +-- test_health.py
-|
-+-- examples/
-|   +-- sample_events.csv
-|
-+-- .github/
-|   +-- workflows/
-|       +-- python-app.yml
-|
-+-- config.example.yaml
-+-- requirements.txt
-+-- README.md
+│
+├── src/
+│   ├── __init__.py
+│   ├── collector.py
+│   ├── models.py
+│   ├── health.py
+│   └── storage.py
+│
+├── tests/
+│   └── test_health.py
+│
+├── examples/
+│   └── sample_events.csv
+│
+├── .github/
+│   └── workflows/
+│       └── python-app.yml
+│
+├── config.example.yaml
+├── requirements.txt
+└── README.md
 ```
 
 ## Main components
