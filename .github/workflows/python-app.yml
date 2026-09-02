@@ -30,9 +30,15 @@ jobs:
           python -m py_compile src/models.py
           python -m py_compile src/health.py
           python -m py_compile src/storage.py
-          
+
       - name: Run tests
         env:
           PYTHONPATH: .
         run: |
           python -m pytest -q
+
+      - name: Run collector smoke test
+        env:
+          PYTHONPATH: .
+        run: |
+          python -m src.collector
