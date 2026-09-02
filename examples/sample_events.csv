@@ -1,0 +1,7 @@
+timestamp,exchange,symbol,event_type,price,quantity,latency_ms
+2026-01-01T12:00:00.100Z,exchange_a,ASSET1USDT,trade,100.25,0.150,42
+2026-01-01T12:00:00.220Z,exchange_b,ASSET1USDT,trade,100.27,0.080,55
+2026-01-01T12:00:00.350Z,exchange_c,ASSET2USDT,trade,52.10,1.250,38
+2026-01-01T12:00:00.480Z,exchange_a,ASSET2USDT,trade,52.12,0.700,44
+2026-01-01T12:00:00.610Z,exchange_b,ASSET3USDT,trade,18.75,2.400,61
+2026-01-01T12:00:00.750Z,exchange_c,ASSET3USDT,trade,18.76,1.100,47
