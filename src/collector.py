@@ -8,8 +8,10 @@ of the BotHunter Data Collector project.
 import asyncio
 import logging
 import random
-from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+
+from health import HealthMonitor
+from models import MarketEvent
 
 
 logging.basicConfig(
@@ -20,65 +22,68 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class MarketEvent:
-    exchange: str
-    symbol: str
-    price: float
-    quantity: float
-    timestamp: datetime
-
-
 class DataCollector:
-    """Simple asynchronous collector for demonstration purposes."""
+    """Simplified asynchronous collector for demonstration purposes."""
 
     def __init__(self, exchanges: list[str]) -> None:
         self.exchanges = exchanges
         self.running = False
-        self.events_processed = 0
+        self.health = HealthMonitor(
+            stale_after_ms=5_000.0,
+            max_event_latency_ms=3_000.0,
+        )
 
     async def connect(self, exchange: str) -> None:
         """Simulate connection to an external market-data source."""
-
         logger.info("Connecting to %s...", exchange)
+
         await asyncio.sleep(0.5)
+
         logger.info("Connected to %s", exchange)
 
     async def receive_event(self, exchange: str) -> MarketEvent:
-        """Generate a sample event instead of using production APIs."""
+        """
+        Generate a sample normalized market event.
 
+        Production API connections are intentionally excluded
+        from this public portfolio repository.
+        """
         await asyncio.sleep(random.uniform(0.1, 0.5))
+
+        received_timestamp = datetime.now(timezone.utc)
+
+        simulated_latency_ms = random.uniform(20.0, 250.0)
+
+        event_timestamp = received_timestamp - timedelta(
+            milliseconds=simulated_latency_ms
+        )
 
         return MarketEvent(
             exchange=exchange,
             symbol="BTCUSDT",
+            event_type="trade",
             price=round(random.uniform(50_000, 70_000), 2),
             quantity=round(random.uniform(0.001, 1.0), 6),
-            timestamp=datetime.now(timezone.utc),
+            event_timestamp=event_timestamp,
+            received_timestamp=received_timestamp,
         )
 
     async def process_event(self, event: MarketEvent) -> None:
-        """Validate and process a market event."""
-
-        if event.price <= 0:
-            raise ValueError("Price must be positive")
-
-        if event.quantity <= 0:
-            raise ValueError("Quantity must be positive")
-
-        self.events_processed += 1
+        """Validate an event and update health statistics."""
+        self.health.observe(event)
 
         logger.info(
-            "%s | %s | price=%s | quantity=%s",
+            "%s | %s | %s | price=%s | quantity=%s | latency=%.2f ms",
             event.exchange,
             event.symbol,
+            event.event_type,
             event.price,
             event.quantity,
+            event.latency_ms,
         )
 
     async def collect(self, exchange: str) -> None:
-        """Run a simplified collection loop."""
-
+        """Run one simplified collection loop."""
         await self.connect(exchange)
 
         while self.running:
@@ -90,16 +95,21 @@ class DataCollector:
                 raise
 
             except Exception:
-                logger.exception("Collector error for %s", exchange)
+                logger.exception(
+                    "Collector error for %s",
+                    exchange,
+                )
+
                 await asyncio.sleep(1)
 
     async def run(self, duration: float = 5.0) -> None:
         """Run collectors concurrently for a limited demonstration period."""
-
         self.running = True
 
         tasks = [
-            asyncio.create_task(self.collect(exchange))
+            asyncio.create_task(
+                self.collect(exchange)
+            )
             for exchange in self.exchanges
         ]
 
@@ -112,11 +122,14 @@ class DataCollector:
             for task in tasks:
                 task.cancel()
 
-            await asyncio.gather(*tasks, return_exceptions=True)
+            await asyncio.gather(
+                *tasks,
+                return_exceptions=True,
+            )
 
         logger.info(
-            "Collector stopped. Events processed: %d",
-            self.events_processed,
+            "Collector stopped. Health snapshot: %s",
+            self.health.snapshot(),
         )
 
 
