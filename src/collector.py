@@ -73,7 +73,7 @@ class DataCollector:
     async def process_event(self, event: MarketEvent) -> None:
         """Validate an event and update health statistics."""
         self.health.observe(event)
-        self.storage.save(event)
+        self.storage.add(event)
 
         logger.info(
             "%s | %s | %s | price=%s | quantity=%s | latency=%.2f ms",
