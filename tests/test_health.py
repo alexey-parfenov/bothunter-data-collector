@@ -68,3 +68,18 @@ def test_stale_event_is_detected():
 
     assert snapshot["exchange_a"]["events"] == 1
     assert snapshot["exchange_a"]["stale_events"] == 1
+
+def test_latency_statistics_are_calculated():
+    monitor = HealthMonitor(
+        stale_after_ms=5_000.0,
+        max_event_latency_ms=3_000.0,
+    )
+
+    monitor.observe(make_event(latency_ms=100.0))
+    monitor.observe(make_event(latency_ms=300.0))
+
+    snapshot = monitor.snapshot()
+
+    assert snapshot["exchange_a"]["events"] == 2
+    assert snapshot["exchange_a"]["average_latency_ms"] == 200.0
+    assert snapshot["exchange_a"]["max_latency_ms"] == 300.0
