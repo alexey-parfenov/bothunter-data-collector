@@ -1,5 +1,4 @@
-from dataclasses import dataclass, field
-from statistics import mean
+from dataclasses import dataclass
 
 from src.models import MarketEvent
 
@@ -13,21 +12,19 @@ class HealthStats:
     invalid_events: int = 0
     stale_events: int = 0
     latency_anomalies: int = 0
-    latencies_ms: list[float] = field(default_factory=list)
+    total_latency_ms: float = 0.0
+    max_latency_seen_ms: float = 0.0
 
     @property
     def average_latency_ms(self) -> float:
-        if not self.latencies_ms:
+        if self.events == 0:
             return 0.0
 
-        return mean(self.latencies_ms)
+        return self.total_latency_ms / self.events
 
     @property
     def max_latency_ms(self) -> float:
-        if not self.latencies_ms:
-            return 0.0
-
-        return max(self.latencies_ms)
+        return self.max_latency_seen_ms
 
 
 class HealthMonitor:
@@ -51,7 +48,7 @@ class HealthMonitor:
     def observe(self, event: MarketEvent) -> None:
         """Validate an event and update health statistics."""
 
-        stats = self._get_stats(event.exchange)
+        stats = self._get_stats(event.exchange or "<unknown>")
 
         try:
             event.validate()
@@ -62,7 +59,11 @@ class HealthMonitor:
         latency_ms = event.latency_ms
 
         stats.events += 1
-        stats.latencies_ms.append(latency_ms)
+        stats.total_latency_ms += latency_ms
+        stats.max_latency_seen_ms = max(
+            stats.max_latency_seen_ms,
+            latency_ms,
+        )
 
         if latency_ms > self.stale_after_ms:
             stats.stale_events += 1
