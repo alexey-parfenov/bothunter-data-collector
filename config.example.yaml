@@ -6,15 +6,12 @@ exchanges:
   - exchange_b
   - exchange_c
 
-collector:
-  reconnect_delay_seconds: 5
-  health_check_interval_seconds: 10
+health:
+  stale_after_ms: 5000
   max_event_latency_ms: 3000
 
 storage:
-  format: parquet
   output_dir: data
-  save_health_stats: true
 
 logging:
   level: INFO
